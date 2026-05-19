@@ -167,7 +167,6 @@ function App() {
           <div className="lg:col-span-2 space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-bold text-slate-800">Your Groups</h2>
-              <button className="text-indigo-600 text-sm font-semibold hover:text-indigo-800 transition-colors bg-indigo-50 px-3 py-1.5 rounded-lg">View all</button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {groups.map((group) => (
