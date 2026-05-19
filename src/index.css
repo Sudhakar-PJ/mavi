@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #aa3bff;
+  --color-primary-dark: #8b2ee0;
+  --color-background: #f8fafc;
+  --color-surface: #ffffff;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-slate-800 antialiased;
+  }
+}
