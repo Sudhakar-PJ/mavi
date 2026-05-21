@@ -84,12 +84,12 @@ const Auth = () => {
             <Wallet size={32} />
           </div>
           <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">
-            SplitEase
+            Wallet Tracker
           </h1>
           <p className="text-slate-500 mt-1.5 text-center">
             {isSignUp
-              ? "Create an account to start splitting expenses"
-              : "Sign in to manage your shared bills"}
+              ? "Create an account"
+              : "Sign in"}
           </p>
         </div>
 
