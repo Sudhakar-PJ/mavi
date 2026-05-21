@@ -18,16 +18,23 @@ function App() {
   const [groups, setGroups] = useState([]);
   const [totalSpent, setTotalSpent] = useState(0);
   const [expenses, setExpenses] = useState([]);
+  const [dataLoading, setDataLoading] = useState(true);
 
   useEffect(() => {
     // Check current active session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setDataLoading(true);
+      }
       setSession(session);
       setLoading(false);
     });
 
     // Listen to changes in auth state (login/logout/signup)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setDataLoading(true);
+      }
       setSession(session);
     });
 
@@ -72,10 +79,15 @@ function App() {
     let timer;
 
     if (session?.user) {
-      timer = setTimeout(() => {
-        if (isMounted) {
-          fetchGroups();
-          fetchExpensesTotal();
+      timer = setTimeout(async () => {
+        try {
+          await Promise.all([fetchGroups(), fetchExpensesTotal()]);
+        } catch (err) {
+          console.error("Error fetching data:", err);
+        } finally {
+          if (isMounted) {
+            setDataLoading(false);
+          }
         }
       }, 0);
     } else {
@@ -84,6 +96,7 @@ function App() {
           setGroups([]);
           setTotalSpent(0);
           setExpenses([]);
+          setDataLoading(false);
         }
       }, 0);
     }
@@ -169,31 +182,57 @@ function App() {
               <h2 className="text-xl font-bold text-slate-800">Your Groups</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {groups.map((group) => (
-                <GroupCard 
-                  key={group.id || group.name} 
-                  groupName={group.name} 
-                  summaryText={group.summary} 
-                  onClick={() => setSelectedGroupForModal(group)}
-                  onDelete={() => handleDeleteGroup(group.id)}
-                />
-              ))}
+              {dataLoading ? (
+                <>
+                  <div className="bg-white rounded-2xl p-5 border border-slate-100 flex items-center justify-between animate-pulse">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-slate-200 w-12 h-12 rounded-full"></div>
+                      <div className="space-y-2">
+                        <div className="bg-slate-200 h-4 w-28 rounded"></div>
+                        <div className="bg-slate-200 h-3 w-20 rounded"></div>
+                      </div>
+                    </div>
+                    <div className="bg-slate-200 h-5 w-5 rounded"></div>
+                  </div>
+                  <div className="bg-white rounded-2xl p-5 border border-slate-100 flex items-center justify-between animate-pulse">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-slate-200 w-12 h-12 rounded-full"></div>
+                      <div className="space-y-2">
+                        <div className="bg-slate-200 h-4 w-32 rounded"></div>
+                        <div className="bg-slate-200 h-3 w-16 rounded"></div>
+                      </div>
+                    </div>
+                    <div className="bg-slate-200 h-5 w-5 rounded"></div>
+                  </div>
+                </>
+              ) : (
+                groups.map((group) => (
+                  <GroupCard 
+                    key={group.id || group.name} 
+                    groupName={group.name} 
+                    summaryText={group.summary} 
+                    onClick={() => setSelectedGroupForModal(group)}
+                    onDelete={() => handleDeleteGroup(group.id)}
+                  />
+                ))
+              )}
               
-              <div 
+              <button 
+                disabled={dataLoading}
                 onClick={() => setIsCreateGroupModalOpen(true)}
-                className="bg-slate-100 border-2 border-dashed border-slate-200 rounded-2xl p-5 flex flex-col items-center justify-center text-slate-500 hover:text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50/50 transition-all cursor-pointer group"
+                className="w-full bg-slate-100 border-2 border-dashed border-slate-200 rounded-2xl p-5 flex flex-col items-center justify-center text-slate-500 hover:text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50/50 transition-all cursor-pointer group disabled:opacity-50 disabled:pointer-events-none"
               >
                 <div className="bg-white p-3 rounded-full mb-3 shadow-sm text-slate-400 group-hover:text-indigo-600 transition-colors">
                   <Plus size={24} strokeWidth={2.5} />
                 </div>
                 <span className="font-semibold">Create New Group</span>
-              </div>
+              </button>
             </div>
           </div>
 
           {/* Right Column: Add Expense Form */}
           <div className="lg:col-span-1">
-            <ExpenseForm groups={groups} onExpenseAdded={handleExpenseAdded} />
+            <ExpenseForm groups={groups} onExpenseAdded={handleExpenseAdded} isLoading={dataLoading} />
           </div>
         </div>
       </main>

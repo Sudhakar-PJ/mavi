@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Calendar, IndianRupee, FileText, AlertCircle, Layers } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-const ExpenseForm = ({ groups = [], onExpenseAdded }) => {
+const ExpenseForm = ({ groups = [], onExpenseAdded, isLoading = false }) => {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -86,9 +86,12 @@ const ExpenseForm = ({ groups = [], onExpenseAdded }) => {
             <select
               value={groupId || (groups[0]?.id || '')}
               onChange={(e) => setGroupId(e.target.value)}
-              className="block w-full pl-10 pr-3 py-3 border border-slate-200 focus:ring-indigo-500 focus:border-indigo-500 rounded-xl bg-slate-50 focus:bg-white transition-colors outline-none appearance-none"
+              className="block w-full pl-10 pr-3 py-3 border border-slate-200 focus:ring-indigo-500 focus:border-indigo-500 rounded-xl bg-slate-50 focus:bg-white transition-colors outline-none appearance-none disabled:opacity-60"
+              disabled={isLoading}
             >
-              {groups.length === 0 ? (
+              {isLoading ? (
+                <option value="">Loading groups...</option>
+              ) : groups.length === 0 ? (
                 <option value="">No Groups Available</option>
               ) : (
                 groups.map((group) => (
@@ -99,7 +102,7 @@ const ExpenseForm = ({ groups = [], onExpenseAdded }) => {
               )}
             </select>
           </div>
-          {groups.length === 0 && (
+          {groups.length === 0 && !isLoading && (
             <p className="mt-1.5 text-sm text-amber-600 flex items-center gap-1">
               <AlertCircle size={14} /> Please create a group before adding expenses.
             </p>
@@ -171,7 +174,7 @@ const ExpenseForm = ({ groups = [], onExpenseAdded }) => {
 
         <button
           type="submit"
-          disabled={submitting || groups.length === 0}
+          disabled={submitting || isLoading || groups.length === 0}
           className="w-full bg-indigo-600 text-white font-medium py-3.5 px-4 rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors mt-2 shadow-sm shadow-indigo-200 flex items-center justify-center disabled:opacity-50"
         >
           {submitting ? (
