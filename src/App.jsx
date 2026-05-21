@@ -138,7 +138,7 @@ function App() {
               <div className="bg-indigo-600 text-white p-2.5 rounded-xl shadow-sm shadow-indigo-200">
                 <Wallet size={24} />
               </div>
-              <span className="font-bold text-2xl text-slate-800 tracking-tight">SplitEase</span>
+              <span className="font-bold text-2xl text-slate-800 tracking-tight">Wallet Tracker</span>
             </div>
             <div className="flex items-center">
               <UserProfile />
