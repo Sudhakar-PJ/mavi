@@ -2,6 +2,12 @@ import { useState, useEffect } from 'react';
 import { X, Receipt, Calendar, IndianRupee, Loader2, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
+const formatDate = (dateStr) => {
+  if (!dateStr) return '';
+  const [year, month, day] = dateStr.split('-');
+  return new Date(year, month - 1, day).toLocaleDateString();
+};
+
 const GroupExpensesModal = ({ isOpen, onClose, group, onExpenseDeleted }) => {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -110,7 +116,7 @@ const GroupExpensesModal = ({ isOpen, onClose, group, onExpenseDeleted }) => {
                       <h4 className="font-semibold text-slate-800">{expense.description}</h4>
                       <div className="flex items-center text-xs text-slate-400 mt-1 gap-1">
                         <Calendar size={12} />
-                        <span>{new Date(expense.date).toLocaleDateString()}</span>
+                        <span>{formatDate(expense.date)}</span>
                       </div>
                     </div>
                   </div>

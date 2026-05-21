@@ -20,37 +20,19 @@ const UserProfile = () => {
         
         if (!error && data) {
           setProfile(data);
-          return;
         } else {
           // Fallback to user metadata
           setProfile({
             full_name: user.user_metadata?.full_name || user.email.split('@')[0],
             avatar_url: user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/adventurer/svg?seed=${user.id}`,
           });
-          return;
         }
-      }
-
-      // 2. Fallback: Fetch any profile from the table
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('full_name, avatar_url')
-        .limit(1)
-        .single();
-      
-      if (error) {
-        throw error;
-      }
-      
-      if (data) {
-        setProfile(data);
+      } else {
+        setProfile(null);
       }
     } catch (error) {
-      console.log("Supabase not fully configured or no profiles found. Using placeholder data.", error);
-      setProfile({
-        full_name: "Alex Morgan",
-        avatar_url: "https://i.pravatar.cc/150?img=47"
-      });
+      console.log("Error loading user profile details.", error);
+      setProfile(null);
     } finally {
       setLoading(false);
     }

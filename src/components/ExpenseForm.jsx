@@ -99,6 +99,11 @@ const ExpenseForm = ({ groups = [], onExpenseAdded }) => {
               )}
             </select>
           </div>
+          {groups.length === 0 && (
+            <p className="mt-1.5 text-sm text-amber-600 flex items-center gap-1">
+              <AlertCircle size={14} /> Please create a group before adding expenses.
+            </p>
+          )}
         </div>
 
         <div>
@@ -166,7 +171,7 @@ const ExpenseForm = ({ groups = [], onExpenseAdded }) => {
 
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || groups.length === 0}
           className="w-full bg-indigo-600 text-white font-medium py-3.5 px-4 rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors mt-2 shadow-sm shadow-indigo-200 flex items-center justify-center disabled:opacity-50"
         >
           {submitting ? (
